@@ -37,7 +37,9 @@
       "Bash(curl -s -H \"apikey: sb_publishable_zEpxif_DYwn7UiBW6FP9CA_IEDSIAfN\" -H \"Accept-Profile: dsa\" \"https://ymdkcaedwnnhszhzirli.supabase.co/rest/v1/lenders?select=name,disb&order=sort.asc\")",
       "Bash(curl -s -H \"apikey: sb_publishable_zEpxif_DYwn7UiBW6FP9CA_IEDSIAfN\" -H \"Accept-Profile: dsa\" \"https://ymdkcaedwnnhszhzirli.supabase.co/rest/v1/kpis?select=label,value&order=sort.asc\")",
       "Bash(npm run *)",
-      "mcp__d557439d-06e2-470b-8920-d995aea8a8bf__deploy_to_vercel"
+      "mcp__d557439d-06e2-470b-8920-d995aea8a8bf__deploy_to_vercel",
+      "Bash(grep -c \"NEXT_PUBLIC_SUPABASE_URL\" .env.local)",
+      "Bash(grep -o \"^[A-Z_]*=\" .env.local)"
     ]
   }
 }

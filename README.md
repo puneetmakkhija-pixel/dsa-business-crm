@@ -5,8 +5,11 @@ business. It surfaces month-over-month disbursal trends, lender mix, top DSA
 partners by volume, and the cases/invoices that need attention.
 
 Built with **Next.js 14 (App Router) + React + TypeScript + Tailwind CSS**, with
-charts rendered by **Chart.js**. Implemented from the Claude Design handoff
-`DSA CRM Premium.dc.html`.
+charts rendered by **Chart.js** and data served live from **Supabase**.
+Implemented from the Claude Design handoff `DSA CRM Premium.dc.html`.
+
+**Live:** https://dsa-business-crm.vercel.app
+**Source:** https://github.com/puneetmakkhija-pixel/dsa-business-crm
 
 ## What's on the dashboard
 
@@ -24,17 +27,31 @@ charts rendered by **Chart.js**. Implemented from the Claude Design handoff
 
 ```bash
 npm install
+cp .env.example .env.local   # optional — code falls back to the same values
 npm run dev
 ```
 
 Open http://localhost:3000. The layout is designed for a desktop width (~1440px).
+
+## Data & deployment
+
+- **Database:** Supabase project `smecircle`, isolated `dsa` schema (tables
+  `kpis`, `lenders`, `partners`, `monthly_trend`, `alerts`). RLS is enabled with
+  select-only policies, so the publishable/anon key is safe to expose.
+- **Fetching:** [`app/page.tsx`](app/page.tsx) is an async server component
+  (`force-dynamic`) that calls `getDashboardData()` in
+  [`lib/dashboard-data.ts`](lib/dashboard-data.ts), which reads the `dsa` tables
+  via the Supabase client in [`lib/supabase.ts`](lib/supabase.ts). Edit a row in
+  Supabase and it shows on the next request.
+- **Hosting:** Vercel, connected to this GitHub repo — every push to `main`
+  auto-deploys. Supabase env vars are configured for production/preview/development.
 
 ## Project structure
 
 ```
 app/
   layout.tsx                Root layout — Inter + Sora fonts, dark theme
-  page.tsx                  Renders the Dashboard
+  page.tsx                  Async server component — fetches from Supabase
   globals.css               Tailwind + base styles, scrollbar, riseIn keyframe
 components/dashboard/
   Dashboard.tsx             Page composition (sidebar + main grid)
@@ -48,11 +65,10 @@ components/dashboard/
   AlertsPanel.tsx           Needs-attention list
   Icon.tsx                  Stroked line-icon helper
 lib/
-  dashboard-data.ts         All dashboard data + derived view-models
+  supabase.ts               Supabase client (dsa schema, read-only)
+  dashboard-data.ts         Types + getDashboardData() — fetch & map DB rows
 ```
 
-## Data
-
-All figures live in [`lib/dashboard-data.ts`](lib/dashboard-data.ts), ported from
-the design mock. Swap these arrays for live API/CRM data to make the dashboard
-real — the components are otherwise presentational.
+The components are presentational and receive data via props, so the data source
+is fully isolated in `lib/`. To change what the dashboard shows, edit the rows in
+the Supabase `dsa` tables — no code change needed.
