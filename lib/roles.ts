@@ -44,3 +44,15 @@ export const ALL_ROLES: Role[] = [
 export const isBL = (role: Role) => BL_ROLES.includes(role);
 export const isAdmin = (role: Role) => ADMIN_ROLES.includes(role);
 export const isDSA = (role: Role) => role === "dsa_agent" || role === "dsa_owner";
+
+/** Roles a given role is allowed to create (mirrors crm.create_user in the DB). */
+export function creatableRoles(caller: Role): Role[] {
+  if (caller === "tech_super_admin") return ALL_ROLES; // anyone, incl. admins
+  if (caller === "bl_dsa_admin_bl" || caller === "bl_dsa_admin_pl")
+    return ["dsa_agent", "dsa_owner", "bl_dsa_manager", "bl_dsa_mis", "bl_accounts"];
+  if (caller === "bl_dsa_manager") return ["dsa_agent", "dsa_owner"];
+  return [];
+}
+
+export const canOnboardPartner = (caller: Role): boolean =>
+  ["bl_dsa_manager", "bl_dsa_admin_bl", "bl_dsa_admin_pl", "tech_super_admin"].includes(caller);

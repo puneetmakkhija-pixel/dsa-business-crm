@@ -1,19 +1,24 @@
 import { requireRole } from "@/lib/auth";
-import { ADMIN_ROLES, ROLE_LABELS, type Role } from "@/lib/roles";
-import { getUsers } from "@/lib/crm-queries";
+import { ADMIN_ROLES, ROLE_LABELS, creatableRoles, type Role } from "@/lib/roles";
+import { getUsers, getPartners } from "@/lib/crm-queries";
 import PageHeader from "@/components/ui/PageHeader";
 import DataTable from "@/components/ui/DataTable";
 import StatusPill from "@/components/ui/StatusPill";
+import CreateUserForm from "@/components/admin/CreateUserForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  await requireRole(ADMIN_ROLES);
-  const rows = await getUsers();
+  const profile = await requireRole(ADMIN_ROLES);
+  const [rows, partners] = await Promise.all([getUsers(), getPartners()]);
 
   return (
     <>
       <PageHeader eyebrow="Administration" title="Users & Roles" />
+      <CreateUserForm
+        allowedRoles={creatableRoles(profile.role)}
+        partners={partners.map((p) => ({ id: p.id, name: p.name }))}
+      />
       <DataTable
         title={`${rows.length} users`}
         subtitle="CRM accounts across DSA-side and BL-side roles"

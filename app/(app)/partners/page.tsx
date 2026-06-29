@@ -1,15 +1,16 @@
 import { requireRole } from "@/lib/auth";
-import { BL_ROLES } from "@/lib/roles";
+import { BL_ROLES, canOnboardPartner } from "@/lib/roles";
 import { getPartners, getAggCases } from "@/lib/crm-queries";
 import { inr } from "@/lib/format";
 import PageHeader from "@/components/ui/PageHeader";
 import DataTable from "@/components/ui/DataTable";
 import StatusPill from "@/components/ui/StatusPill";
+import OnboardPartnerForm from "@/components/admin/OnboardPartnerForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function PartnersPage() {
-  await requireRole(BL_ROLES);
+  const profile = await requireRole(BL_ROLES);
   const [partners, cases] = await Promise.all([getPartners(), getAggCases()]);
 
   const rows = partners.map((p) => {
@@ -24,7 +25,11 @@ export default async function PartnersPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Network" title="DSA Partners" />
+      <PageHeader
+        eyebrow="Network"
+        title="DSA Partners"
+        right={canOnboardPartner(profile.role) ? <OnboardPartnerForm /> : undefined}
+      />
       <DataTable
         title={`${rows.length} partners`}
         subtitle="Onboarded DSA organisations"
