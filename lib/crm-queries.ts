@@ -149,15 +149,38 @@ export type PartnerRow = {
   status: string;
   bl_margin_pct: number;
   gst_no: string | null;
+  manager_user_id: string | null;
+  manager: string | null;
 };
 
 export async function getPartners(): Promise<PartnerRow[]> {
   const supabase = createClient();
   const { data } = await supabase
     .from("dsa_partners")
-    .select("id,name,vendor_code,status,bl_margin_pct,gst_no")
+    .select("id,name,vendor_code,status,bl_margin_pct,gst_no,manager_user_id,manager:users!dsa_partners_manager_user_id_fkey(name)")
     .order("name");
-  return (data as PartnerRow[]) ?? [];
+  return ((data as unknown as Array<Record<string, unknown>>) ?? []).map((p) => ({
+    id: p.id as number,
+    name: p.name as string,
+    vendor_code: p.vendor_code as string,
+    status: p.status as string,
+    bl_margin_pct: Number(p.bl_margin_pct),
+    gst_no: (p.gst_no as string) ?? null,
+    manager_user_id: (p.manager_user_id as string) ?? null,
+    manager: (p.manager as { name: string } | null)?.name ?? null,
+  }));
+}
+
+export type ManagerOption = { id: string; name: string; role: string };
+
+export async function getManagers(): Promise<ManagerOption[]> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("users")
+    .select("id,name,role")
+    .in("role", ["bl_dsa_manager", "bl_dsa_admin_bl", "bl_dsa_admin_pl", "tech_super_admin"])
+    .order("name");
+  return (data as ManagerOption[]) ?? [];
 }
 
 // ---------------- Invoices ----------------

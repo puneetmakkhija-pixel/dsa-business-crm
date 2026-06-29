@@ -23,3 +23,19 @@ export async function createPartnerAction(input: {
   revalidatePath("/partners");
   return { ok: true, message: `Onboarded ${input.name}` };
 }
+
+export async function updatePartnerAction(input: {
+  id: number;
+  managerUserId: string | null;
+  blMarginPct: number | null;
+}): Promise<ActionResult> {
+  const supabase = createClient();
+  const { error } = await supabase.rpc("update_partner", {
+    p_id: input.id,
+    p_manager_user_id: input.managerUserId,
+    p_bl_margin_pct: input.blMarginPct,
+  });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/partners");
+  return { ok: true, message: "Partner updated" };
+}
