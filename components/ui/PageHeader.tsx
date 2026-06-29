@@ -10,34 +10,12 @@ export default function PageHeader({
   right?: ReactNode;
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 22,
-        gap: 16,
-        flexWrap: "wrap",
-      }}
-    >
+    <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
       <div>
-        <div style={{ fontSize: 12.5, fontWeight: 600, color: "#7E93B0", letterSpacing: "0.3px" }}>
-          {eyebrow}
-        </div>
-        <div
-          style={{
-            fontFamily: "var(--font-sora), sans-serif",
-            fontSize: 25,
-            fontWeight: 800,
-            letterSpacing: "-0.6px",
-            color: "#F4F8FE",
-            marginTop: 3,
-          }}
-        >
-          {title}
-        </div>
+        <div className="text-[12px] font-semibold uppercase tracking-wide text-brand">{eyebrow}</div>
+        <h1 className="font-display text-[24px] font-bold tracking-tight text-slate-900 mt-0.5">{title}</h1>
       </div>
-      {right && <div style={{ display: "flex", alignItems: "center", gap: 10 }}>{right}</div>}
+      {right && <div className="flex items-center gap-2.5">{right}</div>}
     </div>
   );
 }

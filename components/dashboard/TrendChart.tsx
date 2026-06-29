@@ -40,14 +40,14 @@ export default function TrendChart({ trend }: { trend: Trend }) {
 
     Chart.defaults.font.family = "'Inter', sans-serif";
     Chart.defaults.font.size = 11;
-    Chart.defaults.color = "#7E93B0";
+    Chart.defaults.color = "#64748b";
     Chart.defaults.animation = false;
 
-    const grid = { color: "rgba(255,255,255,0.06)" };
+    const grid = { color: "rgba(15,23,42,0.07)" };
 
     const g = ctx.createLinearGradient(0, 0, 0, 262);
-    g.addColorStop(0, "rgba(91,141,239,0.45)");
-    g.addColorStop(1, "rgba(91,141,239,0.02)");
+    g.addColorStop(0, "rgba(37,99,235,0.55)");
+    g.addColorStop(1, "rgba(37,99,235,0.08)");
 
     const chart = new Chart(canvas, {
       type: "bar" as keyof ChartTypeRegistry,

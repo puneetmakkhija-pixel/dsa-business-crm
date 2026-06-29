@@ -8,38 +8,29 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // DSA Command Center palette
-        ink: {
-          900: "#07111F",
-          800: "#0B1D36",
-          700: "#15315A",
+        // BuddyLoan Partner CRM — light theme (TRD §16)
+        navy: {
+          DEFAULT: "#1A3C6B",
+          50: "#eef3f9",
+          700: "#1f4578",
+          800: "#173258",
+          900: "#11243f",
         },
-        slate: {
-          fg: "#E8EEF6",
-          muted: "#7E93B0",
-          dim: "#6E84A3",
-        },
-        accent: {
-          blue: "#5B8DEF",
-          violet: "#7C5BEF",
-          sky: "#7CA8FF",
-          green: "#34D399",
-          gold: "#E8B873",
-          rose: "#FB7185",
+        brand: {
+          DEFAULT: "#2563EB",
+          50: "#eff5ff",
+          100: "#dbe7fe",
+          600: "#2563EB",
+          700: "#1d4ed8",
         },
       },
       fontFamily: {
         sans: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
         display: ["var(--font-sora)", "Sora", "sans-serif"],
       },
-      keyframes: {
-        riseIn: {
-          from: { opacity: "0", transform: "translateY(10px)" },
-          to: { opacity: "1", transform: "none" },
-        },
-      },
-      animation: {
-        riseIn: "riseIn 0.4s ease",
+      boxShadow: {
+        card: "0 1px 2px 0 rgba(15,23,42,0.04), 0 1px 3px 0 rgba(15,23,42,0.06)",
+        cardhover: "0 4px 12px -2px rgba(15,23,42,0.10)",
       },
     },
   },

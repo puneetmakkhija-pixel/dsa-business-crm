@@ -31,9 +31,9 @@ export default async function SlabsPage() {
         rowKey={(l) => l.id}
         columns={[
           { key: "name", header: "Lender", render: (l) => <span style={{ fontWeight: 600 }}>{l.name}</span> },
-          { key: "code", header: "Code", render: (l) => <span style={{ color: "#8DA2BD" }}>{l.short_code}</span> },
+          { key: "code", header: "Code", render: (l) => <span style={{ color: "#64748b" }}>{l.short_code}</span> },
           { key: "type", header: "Slab Type", render: (l) => <span style={{ textTransform: "capitalize" }}>{l.slab_type.replace("_", " ")}</span> },
-          { key: "rate", header: "Payout Rate", render: (l) => <span style={{ fontWeight: 600, color: "#7CA8FF" }}>{l.slab ? rateLabel(l.slab.slab_config) : "—"}</span> },
+          { key: "rate", header: "Payout Rate", render: (l) => <span style={{ fontWeight: 600, color: "#1d4ed8" }}>{l.slab ? rateLabel(l.slab.slab_config) : "—"}</span> },
           { key: "eff", header: "Effective From", align: "right", render: (l) => (l.slab ? fmtDate(l.slab.effective_from) : "—") },
           { key: "active", header: "Status", align: "right", render: (l) => <StatusPill status={l.is_active ? "active" : "inactive"} /> },
         ]}

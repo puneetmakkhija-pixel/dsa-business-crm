@@ -37,8 +37,8 @@ export default async function PartnersPage() {
         rowKey={(p) => p.id}
         columns={[
           { key: "name", header: "DSA", render: (p) => <span style={{ fontWeight: 600 }}>{p.name}</span> },
-          { key: "code", header: "Vendor Code", render: (p) => <span style={{ color: "#8DA2BD" }}>{p.vendor_code}</span> },
-          { key: "gst", header: "GST", render: (p) => <span style={{ color: "#8DA2BD", fontSize: 11.5 }}>{p.gst_no ?? "—"}</span> },
+          { key: "code", header: "Vendor Code", render: (p) => <span style={{ color: "#64748b" }}>{p.vendor_code}</span> },
+          { key: "gst", header: "GST", render: (p) => <span style={{ color: "#64748b", fontSize: 11.5 }}>{p.gst_no ?? "—"}</span> },
           { key: "margin", header: "BL Margin", align: "right", render: (p) => p.bl_margin_pct.toFixed(2) + "%" },
           { key: "cases", header: "Cases", align: "right", render: (p) => p.caseCount },
           { key: "disb", header: "Disbursed", align: "right", render: (p) => inr(p.disbursed) },

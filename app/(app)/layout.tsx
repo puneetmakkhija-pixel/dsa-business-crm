@@ -12,17 +12,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const items = navForRole(profile.role);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        width: "100%",
-        display: "flex",
-        background:
-          "radial-gradient(1200px 600px at 18% -8%, #15315A 0%, #0B1D36 45%, #07111F 100%)",
-      }}
-    >
+    <div className="flex min-h-screen w-full bg-slate-100">
       <Sidebar items={items} name={profile.name} roleLabel={ROLE_LABELS[profile.role]} />
-      <div style={{ flex: 1, minWidth: 0, padding: "26px 34px 40px" }}>{children}</div>
+      <main className="min-w-0 flex-1 px-7 py-6 lg:px-9">{children}</main>
       {ROLE_SWITCHER_ENABLED && <RoleSwitcher currentRole={profile.role} />}
     </div>
   );

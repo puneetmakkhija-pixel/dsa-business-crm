@@ -1,24 +1,19 @@
 import type { CSSProperties, ReactNode } from "react";
 
-/** Frosted card surface shared by the chart, leaderboard, and alert panels. */
+/** White card surface (TRD §16: white bg, rounded-xl, subtle border + shadow). */
 export default function Panel({
   children,
   style,
+  className = "",
 }: {
   children: ReactNode;
   style?: CSSProperties;
+  className?: string;
 }) {
   return (
     <div
-      style={{
-        borderRadius: 20,
-        padding: "22px 24px",
-        background:
-          "linear-gradient(158deg, rgba(255,255,255,0.055), rgba(255,255,255,0.015))",
-        border: "1px solid rgba(255,255,255,0.08)",
-        boxShadow: "0 24px 50px -28px rgba(0,0,0,0.8)",
-        ...style,
-      }}
+      className={`rounded-xl border border-slate-200 bg-white p-5 shadow-card ${className}`}
+      style={style}
     >
       {children}
     </div>

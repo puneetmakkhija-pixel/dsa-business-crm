@@ -34,12 +34,12 @@ export default function RoleSwitcher({ currentRole }: { currentRole: Role }) {
             padding: 10,
             borderRadius: 16,
             background: "rgba(11,29,54,0.96)",
-            border: "1px solid rgba(255,255,255,0.12)",
+            border: "1px solid #cbd5e1",
             boxShadow: "0 30px 60px -24px rgba(0,0,0,0.85)",
             backdropFilter: "blur(8px)",
           }}
         >
-          <div style={{ fontSize: 10.5, color: "#6E84A3", padding: "4px 8px 8px", textTransform: "uppercase", letterSpacing: "0.5px", fontWeight: 700 }}>
+          <div style={{ fontSize: 10.5, color: "#94a3b8", padding: "4px 8px 8px", textTransform: "uppercase", letterSpacing: "0.5px", fontWeight: 700 }}>
             Demo · switch role
           </div>
           {DEMO_USERS.map((u) => {
@@ -58,14 +58,14 @@ export default function RoleSwitcher({ currentRole }: { currentRole: Role }) {
                   marginBottom: 2,
                   cursor: "pointer",
                   background: active ? "rgba(91,141,239,0.18)" : "transparent",
-                  color: "#E8EEF6",
+                  color: "#0f172a",
                 }}
               >
-                <div style={{ fontSize: 12, fontWeight: 700, color: active ? "#7CA8FF" : "#E8EEF6" }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: active ? "#7CA8FF" : "#0f172a" }}>
                   {u.label}
                   {busy === u.email ? " …" : ""}
                 </div>
-                <div style={{ fontSize: 10, color: "#7E93B0" }}>{u.blurb}</div>
+                <div style={{ fontSize: 10, color: "#64748b" }}>{u.blurb}</div>
               </button>
             );
           })}

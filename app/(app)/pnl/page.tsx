@@ -22,9 +22,9 @@ export default async function PnlPage({ searchParams }: { searchParams: { month?
   const pending = dsaPayout - released;
 
   const Row = ({ label, value, bold, indent, accent }: { label: string; value: string; bold?: boolean; indent?: boolean; accent?: string }) => (
-    <div style={{ display: "flex", justifyContent: "space-between", padding: "13px 4px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingLeft: indent ? 22 : 4 }}>
-      <span style={{ fontSize: bold ? 13.5 : 12.5, fontWeight: bold ? 700 : 500, color: bold ? "#F4F8FE" : "#9FB2CC" }}>{label}</span>
-      <span style={{ fontFamily: "var(--font-sora), sans-serif", fontSize: bold ? 14 : 13, fontWeight: bold ? 800 : 600, color: accent ?? (bold ? "#F4F8FE" : "#E8EEF6") }}>{value}</span>
+    <div style={{ display: "flex", justifyContent: "space-between", padding: "13px 4px", borderTop: "1px solid #e2e8f0", paddingLeft: indent ? 22 : 4 }}>
+      <span style={{ fontSize: bold ? 13.5 : 12.5, fontWeight: bold ? 700 : 500, color: bold ? "#0f172a" : "#475569" }}>{label}</span>
+      <span style={{ fontFamily: "var(--font-sora), sans-serif", fontSize: bold ? 14 : 13, fontWeight: bold ? 800 : 600, color: accent ?? (bold ? "#0f172a" : "#0f172a") }}>{value}</span>
     </div>
   );
 
@@ -37,20 +37,20 @@ export default async function PnlPage({ searchParams }: { searchParams: { month?
       />
       <div style={{ maxWidth: 680 }}>
         <Panel>
-          <h3 style={{ margin: "0 0 4px", fontFamily: "var(--font-sora), sans-serif", fontSize: 15, fontWeight: 700, color: "#F4F8FE" }}>
+          <h3 style={{ margin: "0 0 4px", fontFamily: "var(--font-sora), sans-serif", fontSize: 15, fontWeight: 700, color: "#0f172a" }}>
             P&amp;L Statement
           </h3>
-          <span style={{ fontSize: 11.5, color: "#7E93B0" }}>Based on final billing figures · {cases.length} cases</span>
+          <span style={{ fontSize: 11.5, color: "#64748b" }}>Based on final billing figures · {cases.length} cases</span>
           <div style={{ marginTop: 10 }}>
             <Row label="Total Disbursed Volume" value={inr(disbursed)} />
             <Row label="(A) Gross Lender Payout" value={inr(grossPayout)} bold />
             <Row label="(B) Less: Total DSA Payout" value={"− " + inr(dsaPayout)} indent />
-            <Row label="(C) BuddyLoan Gross Margin" value={inr(blMargin)} bold accent="#7CA8FF" />
+            <Row label="(C) BuddyLoan Gross Margin" value={inr(blMargin)} bold accent="#2563eb" />
             <Row label="(D) Less: GST on Margin (18%)" value={"− " + inr(gst)} indent />
-            <Row label="(E) Net BL Margin" value={inr(netMargin)} bold accent="#34D399" />
+            <Row label="(E) Net BL Margin" value={inr(netMargin)} bold accent="#059669" />
             <div style={{ height: 14 }} />
             <Row label="Released Payouts" value={inr(released)} />
-            <Row label="Pending Payouts" value={inr(pending)} accent="#E8B873" />
+            <Row label="Pending Payouts" value={inr(pending)} accent="#b45309" />
           </div>
         </Panel>
       </div>

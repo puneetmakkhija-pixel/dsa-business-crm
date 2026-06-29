@@ -1,6 +1,3 @@
-import Panel from "@/components/dashboard/Panel";
-
-/** Placeholder panel for modules landing in a later phase. */
 export default function PhaseNote({
   phase,
   title,
@@ -13,33 +10,21 @@ export default function PhaseNote({
   icon: string;
 }) {
   return (
-    <Panel style={{ padding: "40px 36px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        <div
-          style={{
-            width: 52,
-            height: 52,
-            borderRadius: 15,
-            flexShrink: 0,
-            background: "rgba(91,141,239,0.14)",
-            color: "#7CA8FF",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+    <div className="rounded-xl border border-slate-200 bg-white p-9 shadow-card">
+      <div className="flex items-center gap-4">
+        <div className="flex h-13 w-13 flex-shrink-0 items-center justify-center rounded-xl bg-blue-50 p-3 text-brand">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
             <path d={icon} />
           </svg>
         </div>
         <div>
-          <div style={{ display: "inline-block", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "#E8B873", background: "rgba(232,184,115,0.14)", padding: "3px 9px", borderRadius: 6, marginBottom: 8 }}>
+          <span className="mb-2 inline-block rounded-md bg-amber-100 px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-wide text-amber-700">
             {phase}
-          </div>
-          <h3 style={{ margin: "0 0 6px", fontFamily: "var(--font-sora), sans-serif", fontSize: 17, fontWeight: 700, color: "#F4F8FE" }}>{title}</h3>
-          <p style={{ margin: 0, fontSize: 13, color: "#9FB2CC", maxWidth: 560, lineHeight: 1.55 }}>{desc}</p>
+          </span>
+          <h3 className="font-display text-[17px] font-bold text-slate-900">{title}</h3>
+          <p className="mt-1.5 max-w-xl text-[13px] leading-relaxed text-slate-500">{desc}</p>
         </div>
       </div>
-    </Panel>
+    </div>
   );
 }

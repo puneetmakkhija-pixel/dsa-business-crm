@@ -4,6 +4,9 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { DEMO_USERS, ROLE_SWITCHER_ENABLED } from "@/lib/demo-roles";
 
+const fieldCls =
+  "mt-2 w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-[13.5px] text-slate-900 outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 placeholder:text-slate-400";
+
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,106 +23,44 @@ export default function LoginForm() {
       setBusy(false);
       return;
     }
-    // Full reload so the server renders the role-scoped shell.
     window.location.assign("/");
   }
 
-  const field: React.CSSProperties = {
-    width: "100%",
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    borderRadius: 12,
-    padding: "12px 14px",
-    fontSize: 13.5,
-    color: "#E8EEF6",
-    outline: "none",
-    marginTop: 8,
-  };
-
   return (
-    <div style={{ width: 380, maxWidth: "92vw" }}>
+    <div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
           signIn(email, password);
         }}
       >
-        <label style={{ fontSize: 12, fontWeight: 600, color: "#8DA2BD" }}>Email</label>
-        <input
-          style={field}
-          type="email"
-          autoComplete="username"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@company.com"
-          required
-        />
-        <label style={{ fontSize: 12, fontWeight: 600, color: "#8DA2BD", display: "block", marginTop: 16 }}>
-          Password
-        </label>
-        <input
-          style={field}
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="••••••••"
-          required
-        />
-        {error && (
-          <div style={{ marginTop: 12, fontSize: 12, color: "#FB7185" }}>{error}</div>
-        )}
+        <label className="text-[12px] font-semibold text-slate-600">Email</label>
+        <input className={fieldCls} type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" required />
+        <label className="mt-4 block text-[12px] font-semibold text-slate-600">Password</label>
+        <input className={fieldCls} type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
+        {error && <div className="mt-3 text-[12px] text-rose-600">{error}</div>}
         <button
           type="submit"
           disabled={busy}
-          style={{
-            width: "100%",
-            marginTop: 18,
-            padding: "12px 14px",
-            borderRadius: 12,
-            border: "none",
-            cursor: busy ? "default" : "pointer",
-            fontSize: 13.5,
-            fontWeight: 700,
-            color: "#fff",
-            background: "linear-gradient(135deg,#5B8DEF,#7C5BEF)",
-            opacity: busy ? 0.7 : 1,
-          }}
+          className="mt-5 w-full rounded-lg bg-brand px-4 py-2.5 text-[13.5px] font-semibold text-white transition-colors hover:bg-brand-700 disabled:opacity-70"
         >
           {busy ? "Signing in…" : "Sign in"}
         </button>
       </form>
 
       {ROLE_SWITCHER_ENABLED && (
-        <div style={{ marginTop: 22 }}>
-          <div
-            style={{
-              fontSize: 11,
-              color: "#6E84A3",
-              textAlign: "center",
-              marginBottom: 10,
-            }}
-          >
-            Demo logins — click a role to sign in
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        <div className="mt-6">
+          <div className="mb-2.5 text-center text-[11px] text-slate-400">Demo logins — click a role to sign in</div>
+          <div className="grid grid-cols-2 gap-2">
             {DEMO_USERS.map((u) => (
               <button
                 key={u.role}
                 onClick={() => signIn(u.email, u.password)}
                 disabled={busy}
-                style={{
-                  textAlign: "left",
-                  padding: "9px 11px",
-                  borderRadius: 10,
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  background: "rgba(255,255,255,0.04)",
-                  cursor: "pointer",
-                  color: "#E8EEF6",
-                }}
+                className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 text-left hover:border-brand/40 hover:bg-blue-50"
               >
-                <div style={{ fontSize: 12, fontWeight: 700 }}>{u.label}</div>
-                <div style={{ fontSize: 10.5, color: "#7E93B0" }}>{u.blurb}</div>
+                <div className="text-[12px] font-semibold text-slate-800">{u.label}</div>
+                <div className="text-[10.5px] text-slate-500">{u.blurb}</div>
               </button>
             ))}
           </div>

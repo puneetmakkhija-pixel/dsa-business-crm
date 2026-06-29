@@ -17,13 +17,13 @@ const sora = Sora({
 });
 
 export const metadata: Metadata = {
-  title: "DSA Command Center — DSA Business CRM",
+  title: "BuddyLoan Partner CRM",
   description:
-    "Premium command center for a DSA loan business: disbursal trends, lender split, partner leaderboard, and items that need attention.",
+    "DSA reconciliation, billing and accounting — cases, MIS, invoices, disputes, P&L and reports.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#07111F",
+  themeColor: "#1A3C6B",
   width: "device-width",
   initialScale: 1,
 };

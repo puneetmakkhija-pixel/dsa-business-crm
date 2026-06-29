@@ -1,20 +1,39 @@
 import { requireRole } from "@/lib/auth";
 import { ADMIN_ROLES } from "@/lib/roles";
+import { getLenders, getMisUploads } from "@/lib/crm-queries";
+import { fmtDate } from "@/lib/format";
 import PageHeader from "@/components/ui/PageHeader";
-import PhaseNote from "@/components/ui/PhaseNote";
+import DataTable from "@/components/ui/DataTable";
+import StatusPill from "@/components/ui/StatusPill";
+import MisUploadForm from "@/components/admin/MisUploadForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function MisPage() {
   await requireRole(["bl_dsa_mis", "bl_accounts", ...ADMIN_ROLES]);
+  const [lenders, uploads] = await Promise.all([getLenders(), getMisUploads()]);
+
   return (
     <>
       <PageHeader eyebrow="Reconciliation" title="MIS Upload" />
-      <PhaseNote
-        phase="Phase 3"
-        title="Daily & Billing MIS upload"
-        desc="Upload a lender's daily or monthly MIS Excel/CSV. The matching engine reconciles each row against booked cases by LAN + lender, sets MIS/billing status, computes variance, and auto-raises disputes beyond the 3% threshold. The data model (cases, mis_uploads, disputes) and reconciliation views are already live — file ingestion lands in Phase 3."
-        icon="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
+      <MisUploadForm lenders={lenders.map((l) => ({ id: l.id, name: l.name }))} />
+      <DataTable
+        title="Recent uploads"
+        subtitle="Daily & billing MIS files processed"
+        rows={uploads}
+        rowKey={(u) => u.id}
+        empty="No MIS files uploaded yet — try the sample above."
+        columns={[
+          { key: "file", header: "File", render: (u) => <span style={{ fontWeight: 600 }}>{u.filename}</span> },
+          { key: "type", header: "Type", render: (u) => <span style={{ textTransform: "capitalize" }}>{u.upload_type}</span> },
+          { key: "lender", header: "Lender", render: (u) => u.lender },
+          { key: "period", header: "Period", render: (u) => u.billing_month ?? (u.mis_date ? fmtDate(u.mis_date) : "—") },
+          { key: "total", header: "Rows", align: "right", render: (u) => u.total_rows },
+          { key: "matched", header: "Matched", align: "right", render: (u) => <span style={{ color: "#34D399" }}>{u.matched_rows}</span> },
+          { key: "unmatched", header: "Unmatched", align: "right", render: (u) => <span style={{ color: "#7CA8FF" }}>{u.unmatched_rows}</span> },
+          { key: "disputed", header: "Disputed", align: "right", render: (u) => <span style={{ color: "#FB7185" }}>{u.disputed_rows}</span> },
+          { key: "status", header: "Status", align: "right", render: (u) => <StatusPill status={u.status === "completed" ? "resolved" : u.status} /> },
+        ]}
       />
     </>
   );

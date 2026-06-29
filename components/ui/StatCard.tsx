@@ -5,99 +5,39 @@ export type Stat = {
   value: string;
   sub?: string;
   icon?: string;
-  glow?: string;
-  icFg?: string;
+  tone?: "blue" | "violet" | "green" | "amber" | "rose";
 };
 
-export function StatCard({ label, value, sub, icon, glow, icFg }: Stat) {
+const TONES: Record<string, { bg: string; fg: string }> = {
+  blue: { bg: "bg-blue-50", fg: "text-blue-600" },
+  violet: { bg: "bg-violet-50", fg: "text-violet-600" },
+  green: { bg: "bg-emerald-50", fg: "text-emerald-600" },
+  amber: { bg: "bg-amber-50", fg: "text-amber-600" },
+  rose: { bg: "bg-rose-50", fg: "text-rose-600" },
+};
+
+export function StatCard({ label, value, sub, icon, tone = "blue" }: Stat) {
+  const t = TONES[tone];
   return (
-    <div
-      style={{
-        position: "relative",
-        overflow: "hidden",
-        borderRadius: 18,
-        padding: "18px 20px",
-        background:
-          "linear-gradient(158deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))",
-        border: "1px solid rgba(255,255,255,0.09)",
-        boxShadow: "0 24px 50px -28px rgba(0,0,0,0.8)",
-      }}
-    >
-      {glow && (
-        <div
-          style={{
-            position: "absolute",
-            top: -30,
-            right: -30,
-            width: 110,
-            height: 110,
-            borderRadius: "50%",
-            background: glow,
-            filter: "blur(34px)",
-            opacity: 0.45,
-          }}
-        />
-      )}
-      <div style={{ position: "relative" }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <span style={{ fontSize: 11.5, fontWeight: 600, color: "#8DA2BD" }}>
-            {label}
-          </span>
-          {icon && (
-            <div
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 9,
-                background: "rgba(255,255,255,0.07)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: icFg ?? "#7CA8FF",
-              }}
-            >
-              <Icon path={icon} size={14} />
-            </div>
-          )}
-        </div>
-        <div
-          style={{
-            fontFamily: "var(--font-sora), sans-serif",
-            fontSize: 24,
-            fontWeight: 800,
-            letterSpacing: "-0.6px",
-            color: "#F4F8FE",
-            marginTop: 12,
-            whiteSpace: "nowrap",
-          }}
-        >
-          {value}
-        </div>
-        {sub && (
-          <div style={{ fontSize: 11, color: "#7E93B0", marginTop: 6 }}>{sub}</div>
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-card transition-shadow hover:shadow-cardhover">
+      <div className="flex items-start justify-between">
+        <span className="text-[12px] font-medium text-slate-500">{label}</span>
+        {icon && (
+          <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${t.bg} ${t.fg}`}>
+            <Icon path={icon} size={15} />
+          </div>
         )}
       </div>
+      <div className="mt-3 font-display text-[24px] font-bold tracking-tight text-slate-900">{value}</div>
+      {sub && <div className="mt-1 text-[12px] text-slate-500">{sub}</div>}
     </div>
   );
 }
 
 export function StatGrid({ stats, cols = 4 }: { stats: Stat[]; cols?: number }) {
+  const colClass = cols === 4 ? "lg:grid-cols-4" : cols === 3 ? "lg:grid-cols-3" : "lg:grid-cols-2";
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: `repeat(${cols},1fr)`,
-        gap: 16,
-        marginBottom: 18,
-        animation: "riseIn .4s ease",
-      }}
-    >
+    <div className={`mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 ${colClass} animate-rise`}>
       {stats.map((s) => (
         <StatCard key={s.label} {...s} />
       ))}

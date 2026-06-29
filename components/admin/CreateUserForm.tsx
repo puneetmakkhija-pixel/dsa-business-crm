@@ -7,16 +7,16 @@ import { ROLE_LABELS, type Role } from "@/lib/roles";
 import Panel from "@/components/dashboard/Panel";
 
 const field: React.CSSProperties = {
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(255,255,255,0.1)",
+  background: "#ffffff",
+  border: "1px solid #cbd5e1",
   borderRadius: 10,
   padding: "10px 12px",
   fontSize: 12.5,
-  color: "#E8EEF6",
+  color: "#0f172a",
   outline: "none",
   width: "100%",
 };
-const label: React.CSSProperties = { fontSize: 11, fontWeight: 600, color: "#8DA2BD", marginBottom: 6, display: "block" };
+const label: React.CSSProperties = { fontSize: 11, fontWeight: 600, color: "#475569", marginBottom: 6, display: "block" };
 
 export default function CreateUserForm({
   allowedRoles,
@@ -70,8 +70,8 @@ export default function CreateUserForm({
         <Panel>
           <form onSubmit={submit}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
-              <h3 style={{ margin: 0, fontFamily: "var(--font-sora), sans-serif", fontSize: 15, fontWeight: 700, color: "#F4F8FE" }}>Create a user</h3>
-              <button type="button" onClick={() => setOpen(false)} style={{ background: "none", border: "none", color: "#7E93B0", cursor: "pointer", fontSize: 18 }}>×</button>
+              <h3 style={{ margin: 0, fontFamily: "var(--font-sora), sans-serif", fontSize: 15, fontWeight: 700, color: "#0f172a" }}>Create a user</h3>
+              <button type="button" onClick={() => setOpen(false)} style={{ background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: 18 }}>×</button>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <div>

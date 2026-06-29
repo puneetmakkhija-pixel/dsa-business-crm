@@ -14,7 +14,7 @@ export default function DonutChart({ lenders }: { lenders: Lender[] }) {
     if (!canvas) return;
 
     Chart.defaults.font.family = "'Inter', sans-serif";
-    Chart.defaults.color = "#7E93B0";
+    Chart.defaults.color = "#64748b";
     Chart.defaults.animation = false;
 
     const chart = new Chart(canvas, {
@@ -26,7 +26,7 @@ export default function DonutChart({ lenders }: { lenders: Lender[] }) {
             data: lenders.map((l) => l.disb),
             backgroundColor: lenders.map((l) => l.color),
             borderWidth: 2,
-            borderColor: "#0B1D36",
+            borderColor: "#ffffff",
           },
         ],
       },

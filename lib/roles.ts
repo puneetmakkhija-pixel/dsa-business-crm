@@ -56,3 +56,11 @@ export function creatableRoles(caller: Role): Role[] {
 
 export const canOnboardPartner = (caller: Role): boolean =>
   ["bl_dsa_manager", "bl_dsa_admin_bl", "bl_dsa_admin_pl", "tech_super_admin"].includes(caller);
+
+/** Roles allowed to add/upload cases (TRD §4.2 — not MIS or Accounts). */
+export const canAddCase = (caller: Role): boolean =>
+  ["dsa_agent", "dsa_owner", "bl_dsa_manager", "bl_dsa_admin_bl", "bl_dsa_admin_pl", "tech_super_admin"].includes(caller);
+
+/** Roles allowed to upload MIS files. */
+export const canUploadMis = (caller: Role): boolean =>
+  ["bl_dsa_mis", "bl_accounts", "bl_dsa_admin_bl", "bl_dsa_admin_pl", "tech_super_admin"].includes(caller);

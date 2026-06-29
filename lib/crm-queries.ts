@@ -49,6 +49,7 @@ export type CaseRow = {
   lender: string;
   lenderColor: string;
   partner: string;
+  po_number: string | null;
 };
 
 export async function getCases(opts: {
@@ -62,7 +63,7 @@ export async function getCases(opts: {
   let query = supabase
     .from("loan_cases")
     .select(
-      "id,lan_id,customer_name,loan_type,disbursed_amount,payout_pct,payout_amt,dsa_payout_amt,bl_margin_amt,mis_status,billing_status,variance_flag,billing_month,disbursed_date,lenders(name,color),dsa_partners(name)"
+      "id,lan_id,customer_name,loan_type,disbursed_amount,payout_pct,payout_amt,dsa_payout_amt,bl_margin_amt,mis_status,billing_status,variance_flag,billing_month,disbursed_date,lenders(name,color),dsa_partners(name),invoices(po_number)"
     )
     .order("disbursed_date", { ascending: false, nullsFirst: false })
     .limit(opts.limit ?? 400);
@@ -97,8 +98,9 @@ export async function getCases(opts: {
       billing_month: (c.billing_month as string) ?? null,
       disbursed_date: (c.disbursed_date as string) ?? null,
       lender: l?.name ?? "—",
-      lenderColor: l?.color ?? "#7E93B0",
+      lenderColor: l?.color ?? "#94a3b8",
       partner: p?.name ?? "—",
+      po_number: (c.invoices as { po_number: string } | null)?.po_number ?? null,
     };
   });
 }
@@ -246,4 +248,44 @@ export async function getUsers(): Promise<UserRow[]> {
     .select("id,name,email,role,is_active,dsa_partner_id")
     .order("role");
   return (data as UserRow[]) ?? [];
+}
+
+// ---------------- MIS uploads ----------------
+
+export type MisUploadRow = {
+  id: number;
+  upload_type: string;
+  billing_month: string | null;
+  mis_date: string | null;
+  filename: string;
+  total_rows: number;
+  matched_rows: number;
+  unmatched_rows: number;
+  disputed_rows: number;
+  status: string;
+  created_at: string;
+  lender: string;
+};
+
+export async function getMisUploads(): Promise<MisUploadRow[]> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("mis_uploads")
+    .select("id,upload_type,billing_month,mis_date,filename,total_rows,matched_rows,unmatched_rows,disputed_rows,status,created_at,lenders(name)")
+    .order("created_at", { ascending: false })
+    .limit(20);
+  return ((data as unknown as Array<Record<string, unknown>>) ?? []).map((u) => ({
+    id: u.id as number,
+    upload_type: u.upload_type as string,
+    billing_month: (u.billing_month as string) ?? null,
+    mis_date: (u.mis_date as string) ?? null,
+    filename: u.filename as string,
+    total_rows: u.total_rows as number,
+    matched_rows: u.matched_rows as number,
+    unmatched_rows: u.unmatched_rows as number,
+    disputed_rows: u.disputed_rows as number,
+    status: u.status as string,
+    created_at: u.created_at as string,
+    lender: (u.lenders as { name: string } | null)?.name ?? "—",
+  }));
 }

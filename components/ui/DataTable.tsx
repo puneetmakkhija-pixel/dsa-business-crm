@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import Panel from "@/components/dashboard/Panel";
 
 export type Column<T> = {
   key: string;
@@ -29,62 +28,26 @@ export default function DataTable<T>({
   right,
 }: Props<T>) {
   return (
-    <Panel style={{ padding: "20px 22px" }}>
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-card">
       {(title || right) && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 14,
-          }}
-        >
+        <div className="flex items-center justify-between gap-4 border-b border-slate-100 px-5 py-4">
           <div>
-            {title && (
-              <h3
-                style={{
-                  margin: 0,
-                  fontFamily: "var(--font-sora), sans-serif",
-                  fontSize: 15,
-                  fontWeight: 700,
-                  color: "#F4F8FE",
-                }}
-              >
-                {title}
-              </h3>
-            )}
-            {subtitle && (
-              <span style={{ fontSize: 11.5, color: "#7E93B0" }}>{subtitle}</span>
-            )}
+            {title && <h3 className="font-display text-[15px] font-bold text-slate-900">{title}</h3>}
+            {subtitle && <span className="text-[12px] text-slate-500">{subtitle}</span>}
           </div>
           {right}
         </div>
       )}
 
-      <div style={{ overflowX: "auto" }}>
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            fontSize: 12.5,
-          }}
-        >
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse text-[13px]">
           <thead>
-            <tr>
+            <tr className="bg-slate-50">
               {columns.map((c) => (
                 <th
                   key={c.key}
-                  style={{
-                    textAlign: c.align ?? "left",
-                    padding: "0 14px 10px",
-                    fontSize: 10.5,
-                    fontWeight: 700,
-                    letterSpacing: "0.4px",
-                    textTransform: "uppercase",
-                    color: "#6E84A3",
-                    width: c.width,
-                    whiteSpace: "nowrap",
-                  }}
+                  className="whitespace-nowrap px-4 py-3 text-[10.5px] font-semibold uppercase tracking-wide text-slate-500"
+                  style={{ textAlign: c.align ?? "left", width: c.width }}
                 >
                   {c.header}
                 </th>
@@ -94,28 +57,18 @@ export default function DataTable<T>({
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td
-                  colSpan={columns.length}
-                  style={{ padding: "28px 14px", textAlign: "center", color: "#7E93B0" }}
-                >
+                <td colSpan={columns.length} className="px-4 py-10 text-center text-slate-400">
                   {empty}
                 </td>
               </tr>
             ) : (
               rows.map((row) => (
-                <tr
-                  key={rowKey(row)}
-                  style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
-                >
+                <tr key={rowKey(row)} className="border-t border-slate-100 hover:bg-slate-50/70">
                   {columns.map((c) => (
                     <td
                       key={c.key}
-                      style={{
-                        textAlign: c.align ?? "left",
-                        padding: "12px 14px",
-                        color: "#E8EEF6",
-                        whiteSpace: "nowrap",
-                      }}
+                      className="whitespace-nowrap px-4 py-3 text-slate-700"
+                      style={{ textAlign: c.align ?? "left" }}
                     >
                       {c.render(row)}
                     </td>
@@ -126,6 +79,6 @@ export default function DataTable<T>({
           </tbody>
         </table>
       </div>
-    </Panel>
+    </div>
   );
 }

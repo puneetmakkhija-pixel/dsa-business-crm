@@ -58,7 +58,7 @@ export default async function ReportsPage() {
           rowKey={(r) => r.id}
           columns={[
             { key: "name", header: "DSA", render: (r) => <span style={{ fontWeight: 600 }}>{r.name}</span> },
-            { key: "code", header: "Vendor", render: (r) => <span style={{ color: "#8DA2BD" }}>{r.code}</span> },
+            { key: "code", header: "Vendor", render: (r) => <span style={{ color: "#64748b" }}>{r.code}</span> },
             { key: "cases", header: "Cases", align: "right", render: (r) => r.cases },
             { key: "disb", header: "Disbursed", align: "right", render: (r) => inr(r.disbursed) },
             { key: "dsa", header: "DSA Payout", align: "right", render: (r) => inr(r.dsaPayout) },
