@@ -36,7 +36,8 @@
       "mcp__ecc6f405-321d-4141-a39c-5e5e9f6496c0__get_publishable_keys",
       "Bash(curl -s -H \"apikey: sb_publishable_zEpxif_DYwn7UiBW6FP9CA_IEDSIAfN\" -H \"Accept-Profile: dsa\" \"https://ymdkcaedwnnhszhzirli.supabase.co/rest/v1/lenders?select=name,disb&order=sort.asc\")",
       "Bash(curl -s -H \"apikey: sb_publishable_zEpxif_DYwn7UiBW6FP9CA_IEDSIAfN\" -H \"Accept-Profile: dsa\" \"https://ymdkcaedwnnhszhzirli.supabase.co/rest/v1/kpis?select=label,value&order=sort.asc\")",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "mcp__d557439d-06e2-470b-8920-d995aea8a8bf__deploy_to_vercel"
     ]
   }
 }
