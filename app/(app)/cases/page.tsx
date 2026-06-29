@@ -7,6 +7,7 @@ import Filters from "@/components/ui/Filters";
 import DataTable from "@/components/ui/DataTable";
 import StatusPill from "@/components/ui/StatusPill";
 import AddCaseForm from "@/components/admin/AddCaseForm";
+import BulkUploadCases from "@/components/admin/BulkUploadCases";
 
 export const dynamic = "force-dynamic";
 
@@ -43,11 +44,17 @@ export default async function CasesPage({ searchParams }: { searchParams: SP }) 
         }
       />
       {canAdd && (
-        <AddCaseForm
-          lenders={lenders.map((l) => ({ id: l.id, name: l.name }))}
-          partners={partners.map((p) => ({ id: p.id, name: p.name }))}
-          showPartner={isBL(profile.role)}
-        />
+        <div className="mb-5 flex flex-wrap items-start gap-3">
+          <AddCaseForm
+            lenders={lenders.map((l) => ({ id: l.id, name: l.name }))}
+            partners={partners.map((p) => ({ id: p.id, name: p.name }))}
+            showPartner={isBL(profile.role)}
+          />
+          <BulkUploadCases
+            partners={partners.map((p) => ({ id: p.id, name: p.name }))}
+            showPartner={isBL(profile.role)}
+          />
+        </div>
       )}
       <DataTable
         title={`${rows.length} cases`}

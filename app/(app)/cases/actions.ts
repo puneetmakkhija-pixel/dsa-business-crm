@@ -28,3 +28,32 @@ export async function createCaseAction(input: {
   revalidatePath("/cases");
   return { ok: true, message: `Case ${input.lan} added${pct ? ` · payout ${pct}%` : ""}` };
 }
+
+export type BulkCaseRow = {
+  lan: string;
+  customer: string;
+  lender: string;
+  amount: number;
+  date: string;
+  loan_type?: string;
+};
+
+export type BulkResult = {
+  ok: boolean;
+  error?: string;
+  summary?: { inserted: number; skipped: number; errors: number; errorRows: { lan: string; error: string }[] };
+};
+
+export async function bulkCreateCasesAction(input: {
+  rows: BulkCaseRow[];
+  dsaPartnerId?: number | null;
+}): Promise<BulkResult> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("create_cases_bulk", {
+    p_rows: input.rows,
+    p_dsa: input.dsaPartnerId ?? null,
+  });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/cases");
+  return { ok: true, summary: data as BulkResult["summary"] };
+}

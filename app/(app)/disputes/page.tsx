@@ -1,15 +1,20 @@
 import { requireProfile } from "@/lib/auth";
+import { isBL } from "@/lib/roles";
 import { getDisputes } from "@/lib/crm-queries";
 import { fmtDate } from "@/lib/format";
 import PageHeader from "@/components/ui/PageHeader";
-import DataTable from "@/components/ui/DataTable";
+import DataTable, { type Column } from "@/components/ui/DataTable";
 import StatusPill from "@/components/ui/StatusPill";
 import { StatGrid, type Stat } from "@/components/ui/StatCard";
+import ResolveDispute from "@/components/admin/ResolveDispute";
 
 export const dynamic = "force-dynamic";
 
+type Row = Awaited<ReturnType<typeof getDisputes>>[number];
+
 export default async function DisputesPage() {
-  await requireProfile();
+  const profile = await requireProfile();
+  const canResolve = isBL(profile.role);
   const rows = await getDisputes();
 
   const count = (s: string) => rows.filter((d) => d.status === s).length;
@@ -30,12 +35,23 @@ export default async function DisputesPage() {
         rowKey={(d) => d.id}
         empty="No disputes raised."
         columns={[
-          { key: "lan", header: "LAN", render: (d) => <span style={{ fontWeight: 600 }}>{d.lan_id}</span> },
-          { key: "type", header: "Type", render: (d) => <span style={{ color: "#334155" }}>{d.type.replace(/_/g, " ")}</span> },
-          { key: "reason", header: "Reason", render: (d) => <span style={{ color: "#475569" }}>{d.reason}</span> },
-          { key: "src", header: "Source", render: (d) => <span style={{ color: "#64748b", fontSize: 11 }}>{d.auto_raised ? "Auto" : "Manual"}</span> },
+          { key: "lan", header: "LAN", render: (d) => <span className="font-semibold text-slate-800">{d.lan_id}</span> },
+          { key: "type", header: "Type", render: (d) => <span className="text-slate-700">{d.type.replace(/_/g, " ")}</span> },
+          { key: "reason", header: "Reason", render: (d) => <span className="text-slate-500">{d.reason}</span> },
+          { key: "src", header: "Source", render: (d) => <span className="text-[11px] text-slate-500">{d.auto_raised ? "Auto" : "Manual"}</span> },
           { key: "date", header: "Raised", align: "right", render: (d) => fmtDate(d.created_at) },
           { key: "status", header: "Status", align: "right", render: (d) => <StatusPill status={d.status} /> },
+          ...(canResolve
+            ? [{
+                key: "actions",
+                header: "",
+                align: "right",
+                render: (d: Row) =>
+                  d.status === "open" || d.status === "under_review"
+                    ? <ResolveDispute id={d.id} lan={d.lan_id} />
+                    : <span className="text-[11px] text-slate-300">—</span>,
+              } as Column<Row>]
+            : []),
         ]}
       />
     </>
