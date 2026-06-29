@@ -9,17 +9,17 @@ import { supabase } from "./supabase";
 export type RailItem = {
   label: string;
   icon: string;
-  on?: boolean;
+  href: string;
 };
 
 export const rail: RailItem[] = [
-  { label: "Dashboard", icon: "M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z", on: true },
-  { label: "Cases", icon: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6" },
-  { label: "Partners", icon: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" },
-  { label: "Billing", icon: "M23 4v6h-6M3.51 9a9 9 0 0 1 14.85-3.36L23 10" },
-  { label: "Invoices", icon: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6" },
-  { label: "P&L", icon: "M23 6l-9.5 9.5-5-5L1 18M17 6h6v6" },
-  { label: "Reports", icon: "M12 20V10M18 20V4M6 20v-4" },
+  { label: "Dashboard", href: "/", icon: "M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z" },
+  { label: "Cases", href: "/cases", icon: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6" },
+  { label: "Partners", href: "/partners", icon: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" },
+  { label: "Billing", href: "/billing", icon: "M23 4v6h-6M3.51 9a9 9 0 0 1 14.85-3.36L23 10" },
+  { label: "Invoices", href: "/invoices", icon: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6" },
+  { label: "P&L", href: "/pnl", icon: "M23 6l-9.5 9.5-5-5L1 18M17 6h6v6" },
+  { label: "Reports", href: "/reports", icon: "M12 20V10M18 20V4M6 20v-4" },
 ];
 
 // ----- Types (view-models consumed by components) -----
