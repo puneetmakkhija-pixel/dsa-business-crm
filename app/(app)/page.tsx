@@ -1,5 +1,5 @@
 import { requireProfile } from "@/lib/auth";
-import { getAggCases, getLenders, getDisputes, getInvoices } from "@/lib/crm-queries";
+import { getAggCases, getLenders, getDisputes, getInvoices, getLatestMonth } from "@/lib/crm-queries";
 import { inr, inrL, monthLabel, monthRange, MONTHS } from "@/lib/format";
 import { isDSA } from "@/lib/roles";
 import Filters from "@/components/ui/Filters";
@@ -19,14 +19,14 @@ const MONTH_ABBR: Record<string, string> = {
 
 export default async function DashboardPage({ searchParams }: { searchParams: { month?: string } }) {
   const profile = await requireProfile();
-  const selectedMonth = searchParams.month && searchParams.month !== "all" ? searchParams.month : "2026-05";
-
-  const [allCases, lenders, disputes, invoices] = await Promise.all([
+  const [allCases, lenders, disputes, invoices, latestMonth] = await Promise.all([
     getAggCases(),
     getLenders(),
     getDisputes(),
     getInvoices(),
+    getLatestMonth(),
   ]);
+  const selectedMonth = searchParams.month && searchParams.month !== "all" ? searchParams.month : latestMonth;
 
   const range = monthRange(selectedMonth);
   const monthCases = range
@@ -86,7 +86,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
         </div>
         <Filters
           showSearch={false}
-          selects={[{ param: "month", placeholder: "May 2026", options: MONTHS.filter((m) => m.value !== "all").map((m) => ({ value: m.value, label: m.label })) }]}
+          selects={[{ param: "month", placeholder: monthLabel(selectedMonth), options: MONTHS.map((m) => ({ value: m.value, label: m.label })) }]}
         />
       </div>
 

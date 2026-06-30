@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/auth";
-import { getAggCases } from "@/lib/crm-queries";
-import { inr, MONTHS } from "@/lib/format";
+import { getAggCases, getLatestMonth } from "@/lib/crm-queries";
+import { inr, MONTHS, monthLabel } from "@/lib/format";
 import PageHeader from "@/components/ui/PageHeader";
 import Filters from "@/components/ui/Filters";
 import Panel from "@/components/dashboard/Panel";
@@ -9,7 +9,8 @@ export const dynamic = "force-dynamic";
 
 export default async function PnlPage({ searchParams }: { searchParams: { month?: string } }) {
   await requireRole(["bl_accounts", "bl_dsa_admin_pl", "bl_dsa_admin_bl", "tech_super_admin", "dsa_owner"]);
-  const cases = await getAggCases(searchParams.month);
+  const selectedMonth = searchParams.month && searchParams.month !== "all" ? searchParams.month : await getLatestMonth();
+  const cases = await getAggCases(selectedMonth);
 
   const sum = (f: (c: (typeof cases)[number]) => number) => cases.reduce((s, c) => s + f(c), 0);
   const disbursed = sum((c) => c.disbursed_amount);
@@ -33,14 +34,14 @@ export default async function PnlPage({ searchParams }: { searchParams: { month?
       <PageHeader
         eyebrow="Finance"
         title="Profit & Loss"
-        right={<Filters showSearch={false} selects={[{ param: "month", placeholder: "All months", options: MONTHS.filter((m) => m.value !== "all").map((m) => ({ value: m.value, label: m.label })) }]} />}
+        right={<Filters showSearch={false} selects={[{ param: "month", placeholder: monthLabel(selectedMonth), options: MONTHS.map((m) => ({ value: m.value, label: m.label })) }]} />}
       />
       <div style={{ maxWidth: 680 }}>
         <Panel>
           <h3 style={{ margin: "0 0 4px", fontFamily: "var(--font-sora), sans-serif", fontSize: 15, fontWeight: 700, color: "#0f172a" }}>
             P&amp;L Statement
           </h3>
-          <span style={{ fontSize: 11.5, color: "#64748b" }}>By disbursal month{searchParams.month ? "" : " · all months"} · {cases.length} cases</span>
+          <span style={{ fontSize: 11.5, color: "#64748b" }}>{monthLabel(selectedMonth)} · by disbursal date · {cases.length} cases</span>
           <div style={{ marginTop: 10 }}>
             <Row label="Total Disbursed Volume" value={inr(disbursed)} />
             <Row label="(A) Gross Lender Payout" value={inr(grossPayout)} bold />

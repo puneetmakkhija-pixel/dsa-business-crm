@@ -120,6 +120,18 @@ export type AggCase = {
   dsa_partner_id: number;
 };
 
+/** The latest month present in the data (YYYY-MM) — used as the default "current month". */
+export async function getLatestMonth(): Promise<string> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("loan_cases")
+    .select("disbursed_date")
+    .order("disbursed_date", { ascending: false })
+    .limit(1);
+  const d = (data?.[0]?.disbursed_date as string) ?? null;
+  return d ? d.slice(0, 7) : "2026-06";
+}
+
 export async function getAggCases(month?: string): Promise<AggCase[]> {
   const supabase = createClient();
   let query = supabase
@@ -271,6 +283,80 @@ export async function getUsers(): Promise<UserRow[]> {
     .select("id,name,email,role,is_active,dsa_partner_id")
     .order("role");
   return (data as UserRow[]) ?? [];
+}
+
+// ---------------- Follow-up tasks ----------------
+
+export type TaskRow = {
+  id: number;
+  title: string;
+  notes: string | null;
+  due_date: string;
+  due_time: string | null;
+  priority: "low" | "medium" | "high";
+  status: "pending" | "done";
+  category: string;
+  case_id: number | null;
+  lan_id: string | null;
+  partner: string | null;
+  assignee: string | null;
+  assigned_to: string | null;
+};
+
+export async function getTasks(opts?: { from?: string; to?: string }): Promise<TaskRow[]> {
+  const supabase = createClient();
+  let query = supabase
+    .from("follow_up_tasks")
+    .select(
+      "id,title,notes,due_date,due_time,priority,status,category,case_id,assigned_to,loan_cases(lan_id),dsa_partners(name),assignee:users!follow_up_tasks_assigned_to_fkey(name)"
+    )
+    .order("due_date", { ascending: true })
+    .order("due_time", { ascending: true, nullsFirst: true })
+    .limit(1000);
+  if (opts?.from) query = query.gte("due_date", opts.from);
+  if (opts?.to) query = query.lt("due_date", opts.to);
+
+  const { data, error } = await query;
+  if (error) throw new Error(`getTasks: ${error.message}`);
+  return ((data as unknown as Array<Record<string, unknown>>) ?? []).map((t) => ({
+    id: t.id as number,
+    title: t.title as string,
+    notes: (t.notes as string) ?? null,
+    due_date: t.due_date as string,
+    due_time: (t.due_time as string) ?? null,
+    priority: t.priority as TaskRow["priority"],
+    status: t.status as TaskRow["status"],
+    category: t.category as string,
+    case_id: (t.case_id as number) ?? null,
+    lan_id: (t.loan_cases as { lan_id: string } | null)?.lan_id ?? null,
+    partner: (t.dsa_partners as { name: string } | null)?.name ?? null,
+    assignee: (t.assignee as { name: string } | null)?.name ?? null,
+    assigned_to: (t.assigned_to as string) ?? null,
+  }));
+}
+
+export type CaseOption = { id: number; lan_id: string; customer_name: string | null };
+
+export async function getCaseOptions(): Promise<CaseOption[]> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("loan_cases")
+    .select("id,lan_id,customer_name")
+    .order("disbursed_date", { ascending: false, nullsFirst: false })
+    .limit(300);
+  return (data as CaseOption[]) ?? [];
+}
+
+export type AssigneeOption = { id: string; name: string };
+
+export async function getAssignableUsers(): Promise<AssigneeOption[]> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("users")
+    .select("id,name")
+    .eq("is_active", true)
+    .order("name");
+  return (data as AssigneeOption[]) ?? [];
 }
 
 // ---------------- MIS uploads ----------------

@@ -1,7 +1,7 @@
 import { requireProfile } from "@/lib/auth";
 import { canAddCase, isBL } from "@/lib/roles";
-import { getCases, getLenders, getPartners } from "@/lib/crm-queries";
-import { inr, fmtDate, MONTHS } from "@/lib/format";
+import { getCases, getLenders, getPartners, getLatestMonth } from "@/lib/crm-queries";
+import { inr, fmtDate, monthLabel, MONTHS } from "@/lib/format";
 import PageHeader from "@/components/ui/PageHeader";
 import Filters from "@/components/ui/Filters";
 import DataTable from "@/components/ui/DataTable";
@@ -16,12 +16,15 @@ type SP = { q?: string; status?: string; billing?: string; month?: string };
 export default async function CasesPage({ searchParams }: { searchParams: SP }) {
   const profile = await requireProfile();
   const canAdd = canAddCase(profile.role);
+  const latestMonth = await getLatestMonth();
+  // Default to the current (latest) data month; "all" shows every month.
+  const month = searchParams.month ?? latestMonth;
   const [rows, lenders, partners] = await Promise.all([
     getCases({
       q: searchParams.q,
       status: searchParams.status,
       billing: searchParams.billing,
-      month: searchParams.month,
+      month: month === "all" ? undefined : month,
     }),
     canAdd ? getLenders() : Promise.resolve([]),
     canAdd && isBL(profile.role) ? getPartners() : Promise.resolve([]),
@@ -38,7 +41,7 @@ export default async function CasesPage({ searchParams }: { searchParams: SP }) 
             selects={[
               { param: "status", placeholder: "MIS status", options: ["awaited", "pending", "confirmed", "disputed"].map((v) => ({ value: v, label: v })) },
               { param: "billing", placeholder: "Billing status", options: ["unbilled", "billed", "released"].map((v) => ({ value: v, label: v })) },
-              { param: "month", placeholder: "Month", options: MONTHS.filter((m) => m.value !== "all").map((m) => ({ value: m.value, label: m.label })) },
+              { param: "month", placeholder: monthLabel(month), options: MONTHS.map((m) => ({ value: m.value, label: m.label })) },
             ]}
           />
         }

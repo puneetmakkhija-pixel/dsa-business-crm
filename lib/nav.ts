@@ -13,6 +13,7 @@ export const NAV_ITEMS: NavItem[] = [
   { key: "dashboard", label: "Dashboard", href: "/", icon: "M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z", roles: ALL_ROLES },
   { key: "partners", label: "DSA Partners", href: "/partners", icon: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z", roles: BL_ROLES },
   { key: "cases", label: "Cases", href: "/cases", icon: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6", roles: ALL_ROLES },
+  { key: "calendar", label: "Follow-ups", href: "/calendar", icon: "M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z", roles: ALL_ROLES },
   { key: "mis", label: "MIS Upload", href: "/mis", icon: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12", roles: ["bl_dsa_mis", "bl_accounts", ...ADMIN_ROLES] },
   { key: "billing", label: "Billing Recon", href: "/billing", icon: "M22 12h-4l-3 9L9 3l-3 9H2", roles: BL_ROLES },
   { key: "invoices", label: "Invoices / PO", href: "/invoices", icon: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8", roles: ALL_ROLES },
