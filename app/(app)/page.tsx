@@ -46,7 +46,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
   // Trend across all months (₹ Lakh)
   const byMonth = new Map<string, { disb: number; payout: number }>();
   for (const c of allCases) {
-    const m = c.billing_month ?? c.disbursed_date?.slice(0, 7) ?? "";
+    // Always attribute to the disbursal month (not billing month)
+    const m = c.disbursed_date?.slice(0, 7) ?? "";
     if (!m) continue;
     const e = byMonth.get(m) ?? { disb: 0, payout: 0 };
     e.disb += c.disbursed_amount;

@@ -40,7 +40,7 @@ export default async function PnlPage({ searchParams }: { searchParams: { month?
           <h3 style={{ margin: "0 0 4px", fontFamily: "var(--font-sora), sans-serif", fontSize: 15, fontWeight: 700, color: "#0f172a" }}>
             P&amp;L Statement
           </h3>
-          <span style={{ fontSize: 11.5, color: "#64748b" }}>Based on final billing figures · {cases.length} cases</span>
+          <span style={{ fontSize: 11.5, color: "#64748b" }}>By disbursal month{searchParams.month ? "" : " · all months"} · {cases.length} cases</span>
           <div style={{ marginTop: 10 }}>
             <Row label="Total Disbursed Volume" value={inr(disbursed)} />
             <Row label="(A) Gross Lender Payout" value={inr(grossPayout)} bold />
