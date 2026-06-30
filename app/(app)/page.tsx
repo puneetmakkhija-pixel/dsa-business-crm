@@ -13,7 +13,8 @@ import DonutChart from "@/components/dashboard/DonutChart";
 export const dynamic = "force-dynamic";
 
 const MONTH_ABBR: Record<string, string> = {
-  "2026-01": "Jan", "2026-02": "Feb", "2026-03": "Mar", "2026-04": "Apr", "2026-05": "May",
+  "2026-01": "Jan", "2026-02": "Feb", "2026-03": "Mar", "2026-04": "Apr",
+  "2026-05": "May", "2026-06": "Jun", "2026-07": "Jul",
 };
 
 export default async function DashboardPage({ searchParams }: { searchParams: { month?: string } }) {
