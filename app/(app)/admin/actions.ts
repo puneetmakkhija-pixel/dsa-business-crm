@@ -11,6 +11,8 @@ export async function createUserAction(input: {
   password: string;
   role: string;
   dsaPartnerId?: number | null;
+  department?: string | null;
+  reportManagerId?: string | null;
 }): Promise<ActionResult> {
   const supabase = createClient();
   const { error } = await supabase.rpc("create_user", {
@@ -19,6 +21,8 @@ export async function createUserAction(input: {
     p_name: input.name,
     p_role: input.role,
     p_dsa_partner_id: input.dsaPartnerId ?? null,
+    p_department: input.department ?? null,
+    p_report_manager_id: input.reportManagerId ?? null,
   });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/admin");

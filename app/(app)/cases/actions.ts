@@ -29,6 +29,18 @@ export async function createCaseAction(input: {
   return { ok: true, message: `Case ${input.lan} added${pct ? ` · payout ${pct}%` : ""}` };
 }
 
+export async function updateCaseLanAction(input: { id: number; lan: string }): Promise<ActionResult> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("update_case_lan", {
+    p_id: input.id,
+    p_lan: input.lan,
+  });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/cases");
+  const lan = (data as { lan?: string })?.lan ?? input.lan;
+  return { ok: true, message: `LAN updated to ${lan}` };
+}
+
 export type BulkCaseRow = {
   lan: string;
   customer: string;

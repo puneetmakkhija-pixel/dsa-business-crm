@@ -8,6 +8,7 @@ import DataTable from "@/components/ui/DataTable";
 import StatusPill from "@/components/ui/StatusPill";
 import AddCaseForm from "@/components/admin/AddCaseForm";
 import BulkUploadCases from "@/components/admin/BulkUploadCases";
+import EditLanButton from "@/components/admin/EditLanButton";
 
 export const dynamic = "force-dynamic";
 
@@ -65,7 +66,12 @@ export default async function CasesPage({ searchParams }: { searchParams: SP }) 
         rows={rows}
         rowKey={(c) => c.id}
         columns={[
-          { key: "lan", header: "LAN", render: (c) => <span className="font-semibold text-slate-800">{c.lan_id}</span> },
+          { key: "lan", header: "LAN", render: (c) => (
+            <span className="inline-flex items-center gap-1.5">
+              <span className="font-semibold text-slate-800">{c.lan_id}</span>
+              {canAdd && <EditLanButton caseId={c.id} currentLan={c.lan_id} />}
+            </span>
+          ) },
           { key: "cust", header: "Customer", render: (c) => <span className="text-slate-700">{c.customer_name ?? "—"}</span> },
           { key: "lender", header: "Lender", render: (c) => (
             <span className="inline-flex items-center gap-1.5">

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createUserAction } from "@/app/(app)/admin/actions";
 import { ROLE_LABELS, type Role } from "@/lib/roles";
+import { DEPARTMENTS, type Department } from "@/lib/departments";
 import Panel from "@/components/dashboard/Panel";
 
 const field: React.CSSProperties = {
@@ -21,16 +22,25 @@ const label: React.CSSProperties = { fontSize: 11, fontWeight: 600, color: "#475
 export default function CreateUserForm({
   allowedRoles,
   partners,
+  managers,
 }: {
   allowedRoles: Role[];
   partners: { id: number; name: string }[];
+  managers: { id: string; name: string }[];
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [role, setRole] = useState<Role>(allowedRoles[0]);
-  const [form, setForm] = useState({ name: "", email: "", password: "", dsaPartnerId: partners[0]?.id ?? 0 });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    department: "call_center" as Department,
+    reportManagerId: "",
+    dsaPartnerId: partners[0]?.id ?? 0,
+  });
 
   const isDsaRole = role === "dsa_agent" || role === "dsa_owner";
 
@@ -44,11 +54,13 @@ export default function CreateUserForm({
       password: form.password,
       role,
       dsaPartnerId: isDsaRole ? form.dsaPartnerId : null,
+      department: form.department,
+      reportManagerId: form.reportManagerId || null,
     });
     setBusy(false);
     if (res.ok) {
       setMsg({ ok: true, text: res.message ?? "Created" });
-      setForm({ name: "", email: "", password: "", dsaPartnerId: partners[0]?.id ?? 0 });
+      setForm({ name: "", email: "", password: "", department: "call_center", reportManagerId: "", dsaPartnerId: partners[0]?.id ?? 0 });
       router.refresh();
     } else {
       setMsg({ ok: false, text: res.error ?? "Failed" });
@@ -75,16 +87,29 @@ export default function CreateUserForm({
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <div>
-                <label style={label}>Full name</label>
+                <label style={label}>User name</label>
                 <input style={field} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
               </div>
               <div>
-                <label style={label}>Email</label>
+                <label style={label}>Email ID</label>
                 <input style={field} type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
               </div>
               <div>
-                <label style={label}>Temporary password</label>
-                <input style={field} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} />
+                <label style={label}>Department</label>
+                <select style={field} value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value as Department })}>
+                  {DEPARTMENTS.map((d) => (
+                    <option key={d.value} value={d.value}>{d.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label style={label}>Report manager</label>
+                <select style={field} value={form.reportManagerId} onChange={(e) => setForm({ ...form, reportManagerId: e.target.value })}>
+                  <option value="">— None —</option>
+                  {managers.map((m) => (
+                    <option key={m.id} value={m.id}>{m.name}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label style={label}>Role</label>
@@ -93,6 +118,10 @@ export default function CreateUserForm({
                     <option key={r} value={r}>{ROLE_LABELS[r]}</option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label style={label}>Temporary password</label>
+                <input style={field} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} />
               </div>
               {isDsaRole && (
                 <div>

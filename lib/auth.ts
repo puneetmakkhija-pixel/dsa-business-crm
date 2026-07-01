@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Role } from "@/lib/roles";
+import type { Department } from "@/lib/departments";
 
 export type Profile = {
   id: string;
@@ -8,6 +9,8 @@ export type Profile = {
   email: string;
   role: Role;
   dsa_partner_id: number | null;
+  department: Department | null;
+  team_name: string | null;
 };
 
 /** Resolves the logged-in user's CRM profile (role + DSA scope), or null. */
@@ -20,7 +23,7 @@ export async function getSessionProfile(): Promise<Profile | null> {
 
   const { data } = await supabase
     .from("users")
-    .select("id,name,email,role,dsa_partner_id")
+    .select("id,name,email,role,dsa_partner_id,department,team_name")
     .eq("id", user.id)
     .single();
 
