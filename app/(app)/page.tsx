@@ -10,6 +10,7 @@ import DataTable from "@/components/ui/DataTable";
 import StatusPill from "@/components/ui/StatusPill";
 import TrendChart from "@/components/dashboard/TrendChart";
 import DonutChart from "@/components/dashboard/DonutChart";
+import BusinessLoansCompiled from "@/components/dashboard/BusinessLoansCompiled";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
     getInvoices(),
     getLatestMonth(),
   ]);
+  // Super admins + both-department admins land on the consolidated
+  // "Business Loans — CC + DSA" command view (FTD / MTD / LMSD, channel split).
+  if (scope.allData) {
+    return <BusinessLoansCompiled cases={allCases} lenders={lenders} />;
+  }
+
   const selectedMonth = searchParams.month && searchParams.month !== "all" ? searchParams.month : latestMonth;
 
   const range = monthRange(selectedMonth);
