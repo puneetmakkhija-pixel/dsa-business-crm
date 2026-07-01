@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Icon from "./Icon";
 import SignOutButton from "@/components/auth/SignOutButton";
-import type { NavItem } from "@/lib/nav";
+import { NAV_SECTIONS, type NavItem } from "@/lib/nav";
 
 function initials(name: string) {
   return name.split(" ").map((w) => w[0]).filter(Boolean).slice(0, 2).join("").toUpperCase();
@@ -21,6 +21,13 @@ export default function Sidebar({
 }) {
   const pathname = usePathname();
 
+  // Group nav items into their sections, preserving section order and dropping
+  // empty sections (a single-department user won't see the other dept's group).
+  const groups = NAV_SECTIONS.map((section) => ({
+    section,
+    items: items.filter((i) => i.section === section),
+  })).filter((g) => g.items.length > 0);
+
   return (
     <aside className="flex h-screen w-[248px] flex-shrink-0 flex-col bg-navy-900 sticky top-0">
       {/* Brand */}
@@ -36,24 +43,34 @@ export default function Sidebar({
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
-        {items.map((r) => {
-          const active = r.href === "/" ? pathname === "/" : pathname.startsWith(r.href);
-          return (
-            <Link
-              key={r.key}
-              href={r.href}
-              aria-current={active ? "page" : undefined}
-              className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13.5px] font-medium transition-colors ${
-                active
-                  ? "bg-brand text-white shadow-sm"
-                  : "text-white/65 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              <Icon path={r.icon} size={18} />
-              {r.label}
-            </Link>
-          );
-        })}
+        {groups.map((g, gi) => (
+          <div key={g.section} className={gi === 0 ? "" : "mt-5"}>
+            {/* Overview is a single top item — no need for a section label. */}
+            {g.section !== "Overview" && (
+              <div className="mb-1.5 px-3 text-[10.5px] font-semibold uppercase tracking-wider text-white/35">
+                {g.section}
+              </div>
+            )}
+            {g.items.map((r) => {
+              const active = r.href === "/" ? pathname === "/" : pathname.startsWith(r.href);
+              return (
+                <Link
+                  key={r.key}
+                  href={r.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13.5px] font-medium transition-colors ${
+                    active
+                      ? "bg-brand text-white shadow-sm"
+                      : "text-white/65 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  <Icon path={r.icon} size={18} />
+                  {r.label}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       {/* User */}
