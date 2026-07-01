@@ -84,7 +84,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
         <div>
           <div className="text-[12.5px] font-medium text-slate-500">{greeting}, {profile.name.split(" ")[0]}</div>
           <h1 className="font-display text-[24px] font-bold tracking-tight text-slate-900 mt-0.5">
-            {isDSA(profile.role) ? "My Command Center" : "DSA Command Center"}
+            {isDSA(profile.role)
+              ? "My Command Center"
+              : scope.allData || scope.department == null
+              ? "Command Center"
+              : scope.department === "call_center"
+              ? "Call Center Command Center"
+              : "DSA Command Center"}
           </h1>
         </div>
         <Filters

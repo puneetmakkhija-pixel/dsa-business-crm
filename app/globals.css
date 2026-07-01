@@ -52,7 +52,14 @@ body {
 }
 
 .animate-rise {
-  animation: riseIn 0.35s ease;
+  animation: riseIn 0.35s ease both;
+}
+
+/* Respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise {
+    animation: none;
+  }
 }
 
 /* native select arrow spacing */
