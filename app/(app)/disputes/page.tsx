@@ -1,6 +1,7 @@
 import { requireProfile } from "@/lib/auth";
 import { isBL } from "@/lib/roles";
-import { getDisputes } from "@/lib/crm-queries";
+import { getDisputes, getManagedPartnerIds } from "@/lib/crm-queries";
+import { scopeFor } from "@/lib/scope";
 import { fmtDate } from "@/lib/format";
 import PageHeader from "@/components/ui/PageHeader";
 import DataTable, { type Column } from "@/components/ui/DataTable";
@@ -15,7 +16,9 @@ type Row = Awaited<ReturnType<typeof getDisputes>>[number];
 export default async function DisputesPage() {
   const profile = await requireProfile();
   const canResolve = isBL(profile.role);
-  const rows = await getDisputes();
+  const scope = scopeFor(profile);
+  const partnerIds = scope.dsaManagerId ? await getManagedPartnerIds(scope.dsaManagerId) : null;
+  const rows = await getDisputes(partnerIds);
 
   const count = (s: string) => rows.filter((d) => d.status === s).length;
   const stats: Stat[] = [

@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/auth";
 import { BL_ROLES } from "@/lib/roles";
-import { getAggCases, getLenders, getPartners, getBlMonths, getAgentIncentives, type AgentIncentive } from "@/lib/crm-queries";
+import { getAggCases, getLenders, getPartners, getBlMonths, getAgentIncentives, getManagedPartnerIds, type AgentIncentive } from "@/lib/crm-queries";
 import { inr } from "@/lib/format";
 import { scopeFor, showsCallCenter, showsDsa } from "@/lib/scope";
 import PageHeader from "@/components/ui/PageHeader";
@@ -18,7 +18,8 @@ export default async function ReportsPage() {
   const scope = scopeFor(profile);
   const seeCC = showsCallCenter(scope);
   const seeDsa = showsDsa(scope);
-  const [cases, lenders, partners, blMonths] = await Promise.all([getAggCases(), getLenders(), getPartners(), getBlMonths()]);
+  const partnerIds = scope.dsaManagerId ? await getManagedPartnerIds(scope.dsaManagerId) : null;
+  const [cases, lenders, partners, blMonths] = await Promise.all([getAggCases(undefined, partnerIds), getLenders(), getPartners(), getBlMonths()]);
 
   // Call-centre performance — latest month, by team manager (team-scoped for a TM)
   const ccMonth = blMonths.length ? blMonths[blMonths.length - 1].billing_month : null;

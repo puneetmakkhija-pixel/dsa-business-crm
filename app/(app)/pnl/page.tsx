@@ -1,5 +1,6 @@
 import { requireRole } from "@/lib/auth";
-import { getAggCases, getLatestMonth } from "@/lib/crm-queries";
+import { getAggCases, getLatestMonth, getManagedPartnerIds } from "@/lib/crm-queries";
+import { scopeFor } from "@/lib/scope";
 import { inr, MONTHS, monthLabel } from "@/lib/format";
 import PageHeader from "@/components/ui/PageHeader";
 import Filters from "@/components/ui/Filters";
@@ -8,9 +9,11 @@ import Panel from "@/components/dashboard/Panel";
 export const dynamic = "force-dynamic";
 
 export default async function PnlPage({ searchParams }: { searchParams: { month?: string } }) {
-  await requireRole(["bl_accounts", "bl_dsa_admin_pl", "bl_dsa_admin_bl", "tech_super_admin", "dsa_owner"]);
+  const profile = await requireRole(["bl_accounts", "bl_dsa_admin_pl", "bl_dsa_admin_bl", "tech_super_admin", "dsa_owner"]);
+  const scope = scopeFor(profile);
+  const partnerIds = scope.dsaManagerId ? await getManagedPartnerIds(scope.dsaManagerId) : null;
   const selectedMonth = searchParams.month && searchParams.month !== "all" ? searchParams.month : await getLatestMonth();
-  const cases = await getAggCases(selectedMonth);
+  const cases = await getAggCases(selectedMonth, partnerIds);
 
   const sum = (f: (c: (typeof cases)[number]) => number) => cases.reduce((s, c) => s + f(c), 0);
   const disbursed = sum((c) => c.disbursed_amount);

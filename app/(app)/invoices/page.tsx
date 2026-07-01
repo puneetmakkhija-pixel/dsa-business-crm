@@ -1,5 +1,6 @@
 import { requireProfile } from "@/lib/auth";
-import { getInvoices, getPartners } from "@/lib/crm-queries";
+import { getInvoices, getPartners, getManagedPartnerIds } from "@/lib/crm-queries";
+import { scopeFor } from "@/lib/scope";
 import { inr } from "@/lib/format";
 import PageHeader from "@/components/ui/PageHeader";
 import DataTable from "@/components/ui/DataTable";
@@ -13,8 +14,10 @@ const ACCOUNTS = ["bl_accounts", "bl_dsa_admin_bl", "bl_dsa_admin_pl", "tech_sup
 export default async function InvoicesPage() {
   const profile = await requireProfile();
   const canGenerate = ACCOUNTS.includes(profile.role);
+  const scope = scopeFor(profile);
+  const partnerIds = scope.dsaManagerId ? await getManagedPartnerIds(scope.dsaManagerId) : null;
   const [rows, partners] = await Promise.all([
-    getInvoices(),
+    getInvoices(partnerIds),
     canGenerate ? getPartners() : Promise.resolve([]),
   ]);
 

@@ -1,6 +1,7 @@
 import { requireProfile } from "@/lib/auth";
 import { canAddCase, isBL } from "@/lib/roles";
-import { getCases, getLenders, getPartners, getLatestMonth } from "@/lib/crm-queries";
+import { getCases, getLenders, getPartners, getLatestMonth, getManagedPartnerIds } from "@/lib/crm-queries";
+import { scopeFor } from "@/lib/scope";
 import { inr, fmtDate, monthLabel, MONTHS } from "@/lib/format";
 import PageHeader from "@/components/ui/PageHeader";
 import Filters from "@/components/ui/Filters";
@@ -17,6 +18,8 @@ type SP = { q?: string; status?: string; billing?: string; month?: string };
 export default async function CasesPage({ searchParams }: { searchParams: SP }) {
   const profile = await requireProfile();
   const canAdd = canAddCase(profile.role);
+  const scope = scopeFor(profile);
+  const partnerIds = scope.dsaManagerId ? await getManagedPartnerIds(scope.dsaManagerId) : null;
   const latestMonth = await getLatestMonth();
   // Default to the current (latest) data month; "all" shows every month.
   const month = searchParams.month ?? latestMonth;
@@ -26,6 +29,7 @@ export default async function CasesPage({ searchParams }: { searchParams: SP }) 
       status: searchParams.status,
       billing: searchParams.billing,
       month: month === "all" ? undefined : month,
+      partnerIds,
     }),
     canAdd ? getLenders() : Promise.resolve([]),
     canAdd && isBL(profile.role) ? getPartners() : Promise.resolve([]),

@@ -1,6 +1,7 @@
 import { requireRole } from "@/lib/auth";
 import { BL_ROLES } from "@/lib/roles";
-import { getCases } from "@/lib/crm-queries";
+import { getCases, getManagedPartnerIds } from "@/lib/crm-queries";
+import { scopeFor } from "@/lib/scope";
 import { inr } from "@/lib/format";
 import PageHeader from "@/components/ui/PageHeader";
 import DataTable from "@/components/ui/DataTable";
@@ -10,8 +11,10 @@ import { StatGrid, type Stat } from "@/components/ui/StatCard";
 export const dynamic = "force-dynamic";
 
 export default async function BillingPage() {
-  await requireRole(BL_ROLES);
-  const all = await getCases({ limit: 1000 });
+  const profile = await requireRole(BL_ROLES);
+  const scope = scopeFor(profile);
+  const partnerIds = scope.dsaManagerId ? await getManagedPartnerIds(scope.dsaManagerId) : null;
+  const all = await getCases({ limit: 1000, partnerIds });
   const reconciled = all.filter((c) => c.variance_flag);
 
   const flag = (f: string) => reconciled.filter((c) => c.variance_flag === f).length;

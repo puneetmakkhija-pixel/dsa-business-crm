@@ -1,7 +1,8 @@
 import { requireProfile } from "@/lib/auth";
-import { getAggCases, getLenders, getDisputes, getInvoices, getLatestMonth } from "@/lib/crm-queries";
+import { getAggCases, getLenders, getDisputes, getInvoices, getLatestMonth, getManagedPartnerIds } from "@/lib/crm-queries";
 import { inr, inrL, monthLabel, monthRange, MONTHS } from "@/lib/format";
 import { isDSA } from "@/lib/roles";
+import { scopeFor } from "@/lib/scope";
 import Filters from "@/components/ui/Filters";
 import Panel from "@/components/dashboard/Panel";
 import { StatGrid, type Stat } from "@/components/ui/StatCard";
@@ -19,8 +20,10 @@ const MONTH_ABBR: Record<string, string> = {
 
 export default async function DashboardPage({ searchParams }: { searchParams: { month?: string } }) {
   const profile = await requireProfile();
+  const scope = scopeFor(profile);
+  const partnerIds = scope.dsaManagerId ? await getManagedPartnerIds(scope.dsaManagerId) : null;
   const [allCases, lenders, disputes, invoices, latestMonth] = await Promise.all([
-    getAggCases(),
+    getAggCases(undefined, partnerIds),
     getLenders(),
     getDisputes(),
     getInvoices(),

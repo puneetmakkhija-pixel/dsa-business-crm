@@ -58,6 +58,7 @@ export async function getCases(opts: {
   billing?: string;
   month?: string;
   limit?: number;
+  partnerIds?: number[] | null;
 }): Promise<CaseRow[]> {
   const supabase = createClient();
   let query = supabase
@@ -68,6 +69,7 @@ export async function getCases(opts: {
     .order("disbursed_date", { ascending: false, nullsFirst: false })
     .limit(opts.limit ?? 400);
 
+  if (opts.partnerIds) query = query.in("dsa_partner_id", opts.partnerIds.length ? opts.partnerIds : [-1]);
   const range = monthRange(opts.month);
   if (range) query = query.gte("disbursed_date", range[0]).lt("disbursed_date", range[1]);
   if (opts.status && opts.status !== "all") query = query.eq("mis_status", opts.status);
@@ -132,7 +134,7 @@ export async function getLatestMonth(): Promise<string> {
   return d ? d.slice(0, 7) : "2026-06";
 }
 
-export async function getAggCases(month?: string): Promise<AggCase[]> {
+export async function getAggCases(month?: string, partnerIds?: number[] | null): Promise<AggCase[]> {
   const supabase = createClient();
   let query = supabase
     .from("loan_cases")
@@ -140,6 +142,7 @@ export async function getAggCases(month?: string): Promise<AggCase[]> {
       "disbursed_amount,payout_amt,dsa_payout_amt,bl_margin_amt,billing_status,mis_status,variance_flag,billing_month,disbursed_date,lender_id,dsa_partner_id"
     )
     .limit(2000);
+  if (partnerIds) query = query.in("dsa_partner_id", partnerIds.length ? partnerIds : [-1]);
   const range = monthRange(month);
   if (range) query = query.gte("disbursed_date", range[0]).lt("disbursed_date", range[1]);
   const { data } = await query;
@@ -150,6 +153,13 @@ export async function getAggCases(month?: string): Promise<AggCase[]> {
     dsa_payout_amt: Number(c.dsa_payout_amt),
     bl_margin_amt: Number(c.bl_margin_amt),
   }));
+}
+
+/** DSA partner ids a Team Manager manages (empty array = manages none). */
+export async function getManagedPartnerIds(managerId: string): Promise<number[]> {
+  const supabase = createClient();
+  const { data } = await supabase.from("dsa_partners").select("id").eq("manager_user_id", managerId);
+  return ((data as { id: number }[]) ?? []).map((r) => r.id);
 }
 
 // ---------------- Partners ----------------
@@ -211,14 +221,16 @@ export type InvoiceRow = {
   partner: string;
 };
 
-export async function getInvoices(): Promise<InvoiceRow[]> {
+export async function getInvoices(partnerIds?: number[] | null): Promise<InvoiceRow[]> {
   const supabase = createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("invoices")
     .select(
       "id,po_number,billing_month,gross_lender_payout,total_dsa_payout,bl_margin_total,gst_amount,net_bl_margin,case_count,status,dsa_partners(name)"
     )
     .order("billing_month", { ascending: false });
+  if (partnerIds) query = query.in("dsa_partner_id", partnerIds.length ? partnerIds : [-1]);
+  const { data, error } = await query;
   if (error) throw new Error(`getInvoices: ${error.message}`);
   return ((data as unknown as Array<Record<string, unknown>>) ?? []).map((i) => ({
     id: i.id as number,
@@ -247,12 +259,16 @@ export type DisputeRow = {
   lan_id: string;
 };
 
-export async function getDisputes(): Promise<DisputeRow[]> {
+export async function getDisputes(partnerIds?: number[] | null): Promise<DisputeRow[]> {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from("disputes")
-    .select("id,type,reason,status,auto_raised,created_at,loan_cases(lan_id)")
-    .order("created_at", { ascending: false });
+  // When scoped to a DSA manager, inner-join loan_cases so disputes are filtered
+  // to that manager's partners; otherwise keep the plain (left) embed.
+  const select = partnerIds
+    ? "id,type,reason,status,auto_raised,created_at,loan_cases!inner(lan_id,dsa_partner_id)"
+    : "id,type,reason,status,auto_raised,created_at,loan_cases(lan_id)";
+  let query = supabase.from("disputes").select(select).order("created_at", { ascending: false });
+  if (partnerIds) query = query.in("loan_cases.dsa_partner_id", partnerIds.length ? partnerIds : [-1]);
+  const { data, error } = await query;
   if (error) throw new Error(`getDisputes: ${error.message}`);
   return ((data as unknown as Array<Record<string, unknown>>) ?? []).map((d) => ({
     id: d.id as number,
