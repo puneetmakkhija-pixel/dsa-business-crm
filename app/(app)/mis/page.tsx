@@ -6,6 +6,7 @@ import PageHeader from "@/components/ui/PageHeader";
 import DataTable from "@/components/ui/DataTable";
 import StatusPill from "@/components/ui/StatusPill";
 import MisUploadForm from "@/components/admin/MisUploadForm";
+import PullMisFromEmail from "@/components/admin/PullMisFromEmail";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ export default async function MisPage() {
   return (
     <>
       <PageHeader eyebrow="Reconciliation" title="MIS Upload" />
+      <PullMisFromEmail />
       <MisUploadForm lenders={lenders.map((l) => ({ id: l.id, name: l.name }))} />
       <DataTable
         title="Recent uploads"
