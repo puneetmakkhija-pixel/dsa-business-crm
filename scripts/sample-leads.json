@@ -1,0 +1,37 @@
+[
+  {
+    "leadId": "L-1001",
+    "gst": { "status": "active", "vintageMonths": 52, "filing": "regular", "annualTurnover": 90000000 },
+    "bureau": { "score": 788, "maxDpd": 0, "hardEnquiries6m": 1, "activeUnsecured": 1 },
+    "banking": { "avgBalance": 620000, "monthlyCredits": 1300000, "creditStability": 0.82, "bounceRatio": 0.0, "negativeDays": 0, "foir": 0.28, "monthsCovered": 6 },
+    "engagement": { "source": "inbound", "contactable": true, "intent": "high" }
+  },
+  {
+    "leadId": "L-1002",
+    "gst": { "status": "active", "vintageMonths": 18, "filing": "regular", "annualTurnover": 12000000 },
+    "banking": { "avgBalance": 140000, "monthlyCredits": 400000, "creditStability": 0.6, "bounceRatio": 0.04, "negativeDays": 1, "monthsCovered": 4 }
+  },
+  {
+    "leadId": "L-1003",
+    "gst": { "status": "active", "vintageMonths": 8, "filing": "irregular" }
+  },
+  {
+    "leadId": "L-1004",
+    "gst": { "status": "active", "vintageMonths": 30, "filing": "regular", "annualTurnover": 6000000 },
+    "bureau": { "score": 632, "maxDpd": 25, "hardEnquiries6m": 6, "activeUnsecured": 7 },
+    "banking": { "avgBalance": 18000, "monthlyCredits": 90000, "bounceRatio": 0.12, "negativeDays": 9 },
+    "engagement": { "source": "cold_list", "contactable": true, "intent": "low" }
+  },
+  {
+    "leadId": "L-1005",
+    "gst": { "status": "cancelled" },
+    "bureau": { "score": 810 },
+    "banking": { "avgBalance": 900000, "monthlyCredits": 2000000 }
+  },
+  {
+    "leadId": "L-1006",
+    "bureau": { "score": null, "maxDpd": 0 },
+    "banking": { "avgBalance": 220000, "monthlyCredits": 650000, "creditStability": 0.7, "bounceRatio": 0.02, "monthsCovered": 6 },
+    "engagement": { "source": "campaign", "contactable": true, "intent": "medium" }
+  }
+]
