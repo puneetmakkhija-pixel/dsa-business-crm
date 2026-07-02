@@ -69,9 +69,13 @@ function isoDate(v: unknown): string | null {
   return isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10);
 }
 
+const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024; // skip anything over 25 MB
+const MAX_SHEET_ROWS = 20000; // bound parse work so a giant/malformed sheet can't hang us
+
 /** Parse an xlsx/csv buffer into MIS rows ({lan, amount, date}). */
 function parseMisWorkbook(buf: Buffer): MisRow[] {
-  const wb = XLSX.read(buf, { type: "buffer" });
+  // sheetRows caps how many rows are read — protects against a runaway/huge sheet.
+  const wb = XLSX.read(buf, { type: "buffer", sheetRows: MAX_SHEET_ROWS });
   const json = XLSX.utils.sheet_to_json<Record<string, unknown>>(wb.Sheets[wb.SheetNames[0]], { defval: "" });
   if (json.length === 0) return [];
   const h = Object.keys(json[0]);
@@ -120,20 +124,39 @@ export async function fetchLenderMisEmails(opts: { markSeen: boolean; sinceDays?
   const lock = await client.getMailboxLock("INBOX");
   try {
     for (const [addr, lenderName] of Object.entries(senders)) {
-      const uids = await client.search({ seen: false, from: addr, since }, { uid: true });
-      if (!uids || uids.length === 0) continue;
+      const found = await client.search({ seen: false, from: addr, since }, { uid: true });
+      if (!found || found.length === 0) continue;
+      // Daily report — only the most recent few unseen messages per sender.
+      const uids = found.sort((a, b) => b - a).slice(0, 5);
       for (const uid of uids) {
         const msg = await client.fetchOne(String(uid), { source: true }, { uid: true });
         if (!msg || !msg.source) continue;
         const parsed = await simpleParser(msg.source);
         const att = (parsed.attachments ?? []).find((a) => XLSX_RE.test(a.filename ?? ""));
         const misDate = parsed.date ? parsed.date.toISOString().slice(0, 10) : null;
+        const base = { uid, from: addr, lenderName, misDate };
         if (!att) {
-          batches.push({ uid, from: addr, lenderName, filename: "(no spreadsheet attachment)", misDate, rows: [], skippedReason: "no .xlsx/.csv attachment" });
+          batches.push({ ...base, filename: "(no spreadsheet attachment)", rows: [], skippedReason: "no .xlsx/.csv attachment" });
           continue;
         }
-        const rows = parseMisWorkbook(att.content as Buffer);
-        batches.push({ uid, from: addr, lenderName, filename: att.filename ?? "mis.xlsx", misDate, rows, skippedReason: rows.length === 0 ? "no LAN rows detected" : undefined });
+        const buf = att.content as Buffer;
+        if (buf.length > MAX_ATTACHMENT_BYTES) {
+          batches.push({ ...base, filename: att.filename ?? "mis.xlsx", rows: [], skippedReason: `attachment too large (${(buf.length / 1e6).toFixed(0)} MB)` });
+          continue;
+        }
+        let rows: MisRow[] = [];
+        let parseErr: string | undefined;
+        try {
+          rows = parseMisWorkbook(buf);
+        } catch (e) {
+          parseErr = `parse failed: ${(e as Error).message}`;
+        }
+        batches.push({
+          ...base,
+          filename: att.filename ?? "mis.xlsx",
+          rows,
+          skippedReason: parseErr ?? (rows.length === 0 ? "no LAN rows detected" : undefined),
+        });
         if (opts.markSeen && rows.length > 0) {
           await client.messageFlagsAdd(String(uid), ["\\Seen"], { uid: true });
         }
