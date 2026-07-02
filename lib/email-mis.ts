@@ -25,15 +25,31 @@ export type LenderMisBatch = {
   skippedReason?: string;
 };
 
+// Known BuddyLoan lender-MIS senders → CRM lender name. Values are matched to
+// crm.lenders leniently (case-insensitive, substring either way), so "Bajaj"
+// resolves to "Bajaj Finserv". Override/extend via the LENDER_MIS_SENDERS env
+// (JSON {sender: lenderName}); env entries win on key collision.
+const DEFAULT_SENDERS: Record<string, string> = {
+  "aman.sahoo@indificapital.com": "Indifi",
+  "aditya.puraswani@ayefin.com": "Aye Finance",
+  "blsmeps@bajajfinserv.in": "Bajaj",
+  "metabasealerts@protium.co.in": "Protium",
+  "reports@flexiloans.com": "Flexiloans",
+  "aman.inder@partner.creditsaison-in.com": "Credit Saison",
+  "gvidya.cbsl@tatacapital.com": "Tata Capital",
+  "aishwarya.shinde3@poonawallafincorp.com": "Poonawalla",
+};
+
 function senderMap(): Record<string, string> {
+  const lower = (obj: Record<string, string>) =>
+    Object.fromEntries(Object.entries(obj).map(([k, v]) => [k.trim().toLowerCase(), v]));
+  const base = lower(DEFAULT_SENDERS);
   const raw = process.env.LENDER_MIS_SENDERS;
-  if (!raw) return {};
+  if (!raw) return base;
   try {
-    const obj = JSON.parse(raw) as Record<string, string>;
-    // normalise keys to lowercase email
-    return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k.trim().toLowerCase(), v]));
+    return { ...base, ...lower(JSON.parse(raw) as Record<string, string>) };
   } catch {
-    return {};
+    return base;
   }
 }
 
