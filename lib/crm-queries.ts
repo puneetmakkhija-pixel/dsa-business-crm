@@ -120,6 +120,7 @@ export type AggCase = {
   disbursed_date: string | null;
   lender_id: number;
   dsa_partner_id: number;
+  channel: "call_center" | "dsa";
 };
 
 /** The latest month present in the data (YYYY-MM) — used as the default "current month". */
@@ -139,7 +140,7 @@ export async function getAggCases(month?: string, partnerIds?: number[] | null):
   let query = supabase
     .from("loan_cases")
     .select(
-      "disbursed_amount,payout_amt,dsa_payout_amt,bl_margin_amt,billing_status,mis_status,variance_flag,billing_month,disbursed_date,lender_id,dsa_partner_id"
+      "disbursed_amount,payout_amt,dsa_payout_amt,bl_margin_amt,billing_status,mis_status,variance_flag,billing_month,disbursed_date,lender_id,dsa_partner_id,channel"
     )
     .limit(2000);
   if (partnerIds) query = query.in("dsa_partner_id", partnerIds.length ? partnerIds : [-1]);
